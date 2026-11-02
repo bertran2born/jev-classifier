@@ -1,5 +1,98 @@
 # Audit des PDF avec Jev
 
+## Démarrage simple sous Windows (recommandé : uv)
+
+Installer [uv](https://docs.astral.sh/uv/getting-started/installation/) une fois,
+dans PowerShell :
+
+```powershell
+winget install --id astral-sh.uv -e
+```
+
+Fermer puis rouvrir PowerShell après l’installation. Télécharger le dépôt avec
+**Code → Download ZIP** sur [GitHub](https://github.com/bertran2born/jev-classifier),
+extraire l’archive, puis ouvrir PowerShell dans le dossier extrait. Si Git est
+déjà installé, on peut utiliser à la place :
+
+```powershell
+git clone https://github.com/bertran2born/jev-classifier.git
+cd jev-classifier
+```
+
+Ouvrir le site en une commande (ou double-cliquer sur `ouvrir-site.cmd`) :
+
+```powershell
+uv run jev.py
+```
+
+uv installe automatiquement Python 3.13 et les dépendances nécessaires si elles
+manquent. Les versions des bibliothèques sont figées dans `uv.lock`. Le premier
+lancement nécessite une connexion pour télécharger les composants. Il n’y a ni
+environnement à activer manuellement, ni installation de Nix ou de Docker.
+Le navigateur s’ouvre sur le serveur local ; garder le terminal ouvert et
+utiliser Ctrl+C pour arrêter. Si le port est occupé : `uv run jev.py --port 8001`.
+
+Créer un dossier `pdfs` dans le projet et y copier les études. Pour retrouver
+sur Windows les résultats déjà calculés sur un autre ordinateur, copier aussi
+le dossier `jev-audit-results` : ces données ne sont pas présentes sur GitHub.
+Les liens vers les PDF et extraits utilisent les sous-dossiers locaux du projet.
+
+Dans un **deuxième terminal**, lancer l’analyse de tous les PDF :
+
+```powershell
+uv run jev.py audit
+```
+
+La clé API est demandée en saisie masquée et reste en mémoire pour cette
+exécution. Si `TYPESAFE_API_KEY` est déjà définie dans l’environnement, elle est
+utilisée directement. Le lanceur ne lit pas de fichier `.env`.
+
+Autres commandes :
+
+```powershell
+# Extraction de trois PDF, sans appel API ni clé
+uv run jev.py audit --dry-run --limit 3
+
+# Classer les 50 premiers PDF
+uv run jev.py audit --limit 50
+
+# Relancer les classifications après modification des critères
+uv run jev.py audit --force
+
+# Utiliser un autre dossier de PDF
+uv run jev.py audit "C:\Mes etudes\pdfs" --limit 50
+
+# Tests Python, avec des réponses API simulées
+uv run python -m unittest discover -s tests -v
+```
+
+Pour modifier l’interface, éditer `index.html`, `viewer.css` ou `viewer.js`, puis
+recharger la page : aucun build ni redémarrage du serveur n’est nécessaire.
+Le bouton **Actualiser** recharge les résultats CSV. Le tri et la recherche dans
+le site ne font aucun appel API.
+
+Pour modifier la classification, éditer `jev_pdf_audit.py`, notamment
+`QUESTIONS`, puis relancer `audit`. Utiliser **`--force`** pour remplacer les
+résultats déjà calculés : cette option entraîne de nouveaux appels API payants.
+Sans cette option, les résultats compatibles sont repris. Après une modification
+du code Python, il faut relancer la commande pour qu’elle soit prise en compte.
+
+Si le dépôt a été cloné, `git pull --ff-only` récupère les mises à jour lorsque
+les modifications locales le permettent. Les PDF et résultats restent locaux.
+Le lanceur fonctionne également sur macOS et Linux ; sous NixOS, utiliser le
+flake présenté ci-dessous pour les dépendances natives.
+
+### Pourquoi uv plutôt que Docker ici ?
+
+Pour cet outil Python avec une interface HTML locale, uv permet de modifier
+directement les fichiers et de lancer le projet sans machine virtuelle Linux.
+Docker reste pertinent pour déployer un service ou si Docker Desktop est déjà
+installé, mais impose une installation et une gestion des volumes supplémentaires
+sur Windows. Aucun conteneur n’est nécessaire pour les commandes ci-dessus.
+Voir les documentations officielles de
+[uv](https://docs.astral.sh/uv/guides/scripts/) et de
+[Docker Desktop sous Windows](https://docs.docker.com/desktop/setup/install/windows-install/).
+
 ## Visualiser les résultats
 
 La page `index.html` fournit recherche, filtres, tri des neuf critères, tri par
@@ -68,6 +161,9 @@ Le fichier `flake.lock` fige les versions des dépendances. Les commandes utilis
 et inclut les études déjà traitées dans cette limite. Relancer la même commande
 reprend les résultats valides si les fichiers, la version du schéma et les
 paramètres d'extraction sont identiques. Les erreurs seront retentées.
+L’option `--force` désactive cette reprise, notamment après modification de
+`QUESTIONS`, et remplace la ligne courante de chaque étude dans le CSV tout en
+conservant l’historique des exécutions dans `results.jsonl`.
 
 Les résultats sont enregistrés dans `jev-audit-results/results.csv` et
 `results.jsonl`, avec les extraits dans `excerpts/`. Le mode `--dry-run`

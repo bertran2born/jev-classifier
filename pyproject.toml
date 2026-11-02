@@ -1,0 +1,12 @@
+[project]
+name = "jev-classifier"
+version = "0.1.0"
+description = "Classify scientific PDFs with Jev and explore the results locally."
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "pymupdf>=1.27,<2",
+    "requests>=2.32,<3",
+]
+
+[tool.uv]
+package = false

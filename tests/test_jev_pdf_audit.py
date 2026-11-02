@@ -109,6 +109,8 @@ class AuditTests(unittest.TestCase):
             self.assertEqual((self.out / "results.csv").read_bytes(), csv)
             self.assertEqual(self.cli("--max-pages", "2"), 0)
             self.assertEqual(ask.call_count, 2)
+            self.assertEqual(self.cli("--max-pages", "2", "--force"), 0)
+            self.assertEqual(ask.call_count, 3)
 
     def test_failure_is_saved_and_exit_code_nonzero(self):
         with patch.dict(audit.os.environ, {"TYPESAFE_API_KEY": "test-key"}), \

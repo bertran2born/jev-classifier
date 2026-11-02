@@ -363,6 +363,7 @@ def main():
     ap.add_argument("--max-pages", type=int, default=100, help="PDF pages read per file (default: 100)")
     ap.add_argument("--max-chars", type=int, default=22000, help="Max excerpt chars sent per file (default: 22000)")
     ap.add_argument("--dry-run", action="store_true", help="Extract excerpts locally only; do not contact Jev")
+    ap.add_argument("--force", action="store_true", help="Reprocess existing results, e.g. after changing QUESTIONS (new API calls)")
     args = ap.parse_args()
     if not args.pdf_dir.is_dir():
         ap.error(f"Not a directory: {args.pdf_dir}")
@@ -388,7 +389,7 @@ def main():
             print(f"Could not stat {p}: {exc}", file=sys.stderr)
             continue
         old = records.get(identity)
-        if old and old.get("status") in ("ok", "needs_ocr", "needs_review") and not args.dry_run \
+        if old and old.get("status") in ("ok", "needs_ocr", "needs_review") and not args.dry_run and not args.force \
                 and old.get("schema_version") == SCHEMA_VERSION \
                 and old.get("max_pages") == args.max_pages and old.get("max_chars") == args.max_chars \
                 and old.get("file_size") == size and old.get("mtime_ns") == mtime:

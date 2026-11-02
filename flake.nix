@@ -54,6 +54,7 @@
             packages = [
               env.python
               env.audit
+              env.pkgs.uv
             ];
           };
         }
@@ -75,6 +76,7 @@
               }
               ''
                 cp ${./jev_pdf_audit.py} jev_pdf_audit.py
+                cp ${./jev.py} jev.py
                 cp ${./viewer.js} viewer.js
                 cp -r ${./tests} tests
                 export PYTHONDONTWRITEBYTECODE=1
