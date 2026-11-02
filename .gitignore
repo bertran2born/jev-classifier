@@ -1,0 +1,40 @@
+# Corpus and generated audit data (kept locally)
+/pdfs/
+*.pdf
+/jev-audit-*/
+*.csv
+*.jsonl
+excerpts/
+
+# Credentials and local agent configuration
+.env
+.env.*
+!.env.example
+/.aws/
+/.codex/
+/.agents/
+
+# Python environments and caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Nix development state and build outputs
+.direnv/
+/result
+/result-*
+
+# Editor files, logs and temporary files
+.idea/
+.vscode/
+.DS_Store
+*~
+*.swp
+*.log
+*.tmp

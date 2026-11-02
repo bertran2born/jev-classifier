@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explorer les classifications statistiques des études analysées avec Jev.">
+  <title>Jev — Observatoire des études</title>
+  <link rel="stylesheet" href="viewer.css">
+  <script src="viewer.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="brand" aria-label="Jev, accueil"><span class="brand-icon">j.</span> jev<span class="brand-separator">/</span><span class="brand-sub">observatoire</span></a>
+    <span class="local-tag"><span></span> Analyse locale · CSV</span>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow">EXPLORATEUR DE RÉSULTATS</p><h1>Les études, sous tous les angles.</h1><p class="lead">Comparez les choix statistiques, explorez les résultats et repérez les points à relire.</p></div>
+      <div class="intro-actions"><button id="reload" class="button secondary">↻ Actualiser</button><label class="button primary" for="csv-file">＋ Importer un CSV</label><input id="csv-file" type="file" accept=".csv,text/csv" class="file-input"></div>
+    </section>
+    <div id="dropzone" class="source-line"><span class="source-icon">▤</span><p id="source" role="status" aria-live="polite">Recherche des résultats locaux…</p><span class="drop-hint">ou glissez votre CSV ici</span></div>
+    <section class="metrics" aria-label="Vue d’ensemble du fichier">
+      <article class="metric"><span>Études importées</span><strong id="total">0</strong><small>dans le fichier courant</small></article>
+      <article class="metric"><span>Classifications réussies</span><strong id="classified">0</strong><small>statut technique « ok »</small></article>
+      <article class="metric"><span>À relire</span><strong id="review">0</strong><small>alerte, incertitude ou information manquante</small></article>
+      <article class="metric"><span>Extraction à vérifier</span><strong id="issues">0</strong><small>erreur, OCR ou texte insuffisant</small></article>
+    </section>
+    <section class="workspace">
+      <aside class="filters" aria-label="Filtres">
+        <div class="section-title"><h2>Affiner la sélection</h2><button id="reset" class="text-button">Réinitialiser</button></div>
+        <label for="status-filter">Statut du traitement</label><select id="status-filter"><option value="">Tous les statuts</option><option value="ok">Classifié</option><option value="error">Erreur</option><option value="needs_ocr">OCR nécessaire</option><option value="needs_review">Texte insuffisant</option><option value="dry_run">Extraction seule</option></select>
+        <label for="field-filter">Domaine scientifique</label><select id="field-filter"><option value="">Tous les domaines</option></select>
+        <label for="dimension">Critère à explorer</label><select id="dimension"></select>
+        <label for="value-filter">Classification</label><select id="value-filter"><option value="">Toutes les classifications</option></select>
+        <label for="threshold">Seuil de relecture <output id="threshold-value" for="threshold">80 %</output></label><input id="threshold" type="range" min="50" max="99" value="80">
+        <label class="check-label"><input id="review-only" type="checkbox"> Uniquement les études à relire</label>
+        <p class="filter-note">À relire : au moins une probabilité sous le seuil, une réponse inconnue ou manquante, ou une alerte du script. Ce repère n’est pas un verdict sur l’étude.</p>
+        <div class="distribution"><h3>Répartition de la sélection</h3><p id="distribution-label"></p><div id="chart"></div></div>
+      </aside>
+      <section class="results" aria-labelledby="results-title">
+        <div class="results-heading"><div><h2 id="results-title">Les études</h2><p id="result-count" aria-live="polite">Aucune étude chargée</p></div><button id="export" class="button secondary" disabled>↓ Exporter la sélection</button></div>
+        <label class="search-box" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Rechercher un DOI, un fichier, une classification, un modèle…" autocomplete="off"><kbd>/</kbd></label>
+        <p class="table-hint">Cliquez sur un en-tête pour trier et sur une étude pour consulter ses détails. Faites défiler horizontalement pour voir les neuf critères.</p>
+        <div class="table-wrap"><table><caption class="sr-only">Études et classifications statistiques</caption><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
+        <div id="empty" class="empty" hidden><span>∅</span><h3>Aucune étude à afficher</h3><p>Importez un CSV ou ajustez vos filtres.</p></div>
+        <footer class="pagination"><span id="page-info">0 étude</span><div><button id="previous" class="button secondary" disabled>← Précédent</button><button id="next" class="button secondary" disabled>Suivant →</button></div></footer>
+      </section>
+    </section>
+    <p class="method-note"><strong>Lire ces résultats.</strong> Les probabilités décrivent les étiquettes proposées par Jev à partir d’extraits sélectionnés. Elles ne mesurent ni la qualité globale d’une étude, ni la probabilité de p-hacking ou d’une intention idéologique.</p>
+    <footer class="site-footer"><span>Jev / Observatoire des études</span><span>Aucun appel à l’API Jev · Aucun envoi du CSV à un service externe</span></footer>
+  </main>
+  <dialog id="detail"><div class="dialog-heading"><p class="eyebrow">FICHE DE L’ÉTUDE</p><button id="close-detail" class="button secondary" aria-label="Fermer les détails">Fermer ×</button></div><div id="detail-content"></div></dialog>
+</body>
+</html>
